@@ -173,6 +173,7 @@ mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_malloc(mi_heap_t*
 }
 
 mi_decl_nodiscard extern inline mi_decl_restrict void* mi_malloc(size_t size) mi_attr_noexcept {
+  _mi_trace_message("{ \"type\": \"malloc\", \"args\": [%zu] }\n", size);
   return mi_heap_malloc(mi_prim_get_default_heap(), size);
 }
 
@@ -560,6 +561,7 @@ static inline mi_segment_t* mi_checked_ptr_segment(const void* p, const char* ms
 // fast path written carefully to prevent spilling on the stack
 void mi_free(void* p) mi_attr_noexcept
 {
+  _mi_trace_message("{ \"type\": \"free\", \"args\": [] }\n");
   if mi_unlikely(p == NULL) return;
   mi_segment_t* const segment = mi_checked_ptr_segment(p,"mi_free");
   const bool          is_local= (_mi_prim_thread_id() == mi_atomic_load_relaxed(&segment->thread_id));
@@ -675,6 +677,7 @@ mi_decl_nodiscard extern inline mi_decl_restrict void* mi_heap_calloc(mi_heap_t*
 }
 
 mi_decl_nodiscard mi_decl_restrict void* mi_calloc(size_t count, size_t size) mi_attr_noexcept {
+  _mi_trace_message("{ \"type\": \"calloc\", \"args\": [%zu, %zu] }\n", count, size);
   return mi_heap_calloc(mi_prim_get_default_heap(),count,size);
 }
 
@@ -765,6 +768,7 @@ mi_decl_nodiscard void* mi_heap_recalloc(mi_heap_t* heap, void* p, size_t count,
 
 
 mi_decl_nodiscard void* mi_realloc(void* p, size_t newsize) mi_attr_noexcept {
+  _mi_trace_message("{ \"type\": \"realloc\", \"args\": [%zu] }\n", newsize);
   return mi_heap_realloc(mi_prim_get_default_heap(),p,newsize);
 }
 
